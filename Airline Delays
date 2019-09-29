@@ -1,0 +1,81 @@
+
+#READING DATA FILE INTO R
+datafile = read.table(file.choose(),header=T,sep=",")
+
+head(datafile)
+
+#CONSTRUCTING INTERVALS FOR HOUSING MEDIAN AGE
+Housing_Age = datafile$housing_median_age
+Housing_Age
+low_value = 1
+high_value = 52
+step_value = 10
+#?seq
+sequence = seq(low_value,high_value,step_value)
+#sequence
+#?cut
+intervals = cut(Housing_Age,sequence)
+#intervals
+distribution = table(intervals)
+#distribution
+
+
+#BAR PLOT FOR HOUSING MEDIAN AGE FREQUENCY DISTRIBUTION
+barplot(distribution,main="Housing Median Age",xlab="Housing Age",ylab="No of Houses")
+
+#DATA MANIPULATION FOR PIE CHART
+dist2 = as.data.frame(distribution)
+#dist2
+
+Percent_Distribution = (dist2$Freq/sum(dist2$Freq)) * 100
+#Percent_Distribution
+#?pie
+
+#PIE CHART FOR RELATIVE FREQUENCY DISTRIBUTION OF HOUSING MEDIAN AGE
+pie(Percent_Distribution,labels = dist2$intervals,main = "Percentage distribution of Housing Median Age")
+
+#BOX PLOT FOR MEDIAN INCOME
+boxplot(datafile$median_income,names=c("Median Income"))
+#?boxplot
+
+
+#SCATTER PLOT FOR HOUSING MEDIAN AGE AND MEDIAN HOUSE VALUE
+
+plot(datafile$total_rooms,datafile$population,xlab = "Total_Rooms",ylab = "Population",main = "Scatter Chart for total rooms vs population")
+#?plot
+
+#CORELATION BETWEEN VARIABLES
+cor_var1 = data.frame(datafile$housing_median_age,datafile$total_rooms,datafile$total_bedrooms,datafile$median_house_value)
+cor(cor_var1,method="pearson",use="complete.obs")
+
+cor_var2 = data.frame(datafile$population,datafile$households,datafile$median_income,datafile$median_house_value)
+cor(cor_var2,method="pearson",use="complete.obs")
+
+#TESTING STATISTICAL SIGNIFICANCE
+
+attach(datafile)
+cor.test(housing_median_age,median_house_value,method=c("pearson"))
+cor.test(total_rooms,median_house_value,method=c("pearson"))
+cor.test(total_bedrooms,median_house_value,method=c("pearson"))
+cor.test(population,median_house_value,method=c("pearson"))
+cor.test(households,median_house_value,method=c("pearson"))
+cor.test(median_income,median_house_value,method=c("pearson"))
+
+#REGRESSION
+model1 = lm(median_house_value ~ housing_median_age + population + households + median_income)
+summary(model1)
+
+model2 = lm(median_house_value ~ housing_median_age + median_income + total_bedrooms)
+summary(model2)
+
+model3 = lm(median_house_value ~ median_income + total_rooms + housing_median_age)
+summary(model3)
+
+model4 = lm(median_house_value ~ housing_median_age + median_income)
+summary (model4)
+
+model5 = lm(median_house_value ~ median_income)
+summary (model5)
+
+model6 = lm(median_house_value ~ housing_median_age)
+summary (model6)
